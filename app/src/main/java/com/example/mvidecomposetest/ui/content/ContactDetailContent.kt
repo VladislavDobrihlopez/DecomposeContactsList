@@ -12,23 +12,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mvidecomposetest.domain.Contact
-import com.example.mvidecomposetest.presentation_legacy.ContactDetailViewModel
+import com.example.mvidecomposetest.presentation.edit.EditContactComponent
+import com.example.mvidecomposetest.presentation.save.SaveContactComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddContact(
-    contact: Contact? = null,
-    onContactSaved: () -> Unit,
+fun AddContactScreen(
+    component: SaveContactComponent,
 ) {
-    val viewModel: ContactDetailViewModel = viewModel()
+    val state by component.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -37,42 +33,27 @@ fun AddContact(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        var username by remember {
-            mutableStateOf(contact?.userName ?: "")
-        }
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = username,
+            value = state.userName,
             placeholder = {
                 Text(text = "Username:")
             },
-            onValueChange = { username = it }
+            onValueChange = component::onUpdateUserName
         )
-        var phone by remember {
-            mutableStateOf(contact?.mobilePhone ?: "")
-        }
+
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = phone,
+            value = state.mobilePhone,
             placeholder = {
                 Text(text = "Phone:")
             },
-            onValueChange = { phone = it }
+            onValueChange = component::onUpdateMobilePhone
         )
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                if (contact == null) {
-                    viewModel.addContact(username, phone)
-                } else {
-                    viewModel.editContact(
-                        contact.copy(
-                            userName = username,
-                            mobilePhone = phone
-                        )
-                    )
-                }
-                onContactSaved()
+                component.onSave()
             }
         ) {
             Text(text = "Save")
@@ -80,10 +61,45 @@ fun AddContact(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditContact(
-    contact: Contact,
-    onContactChanged: () -> Unit,
+fun EditContactScreen(
+    component: EditContactComponent,
 ) {
-    AddContact(contact, onContactChanged)
+    val state by component.state.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.userName,
+            placeholder = {
+                Text(text = "Username:")
+            },
+            onValueChange = component::onUpdateUserName
+        )
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = state.mobilePhone,
+            placeholder = {
+                Text(text = "Phone:")
+            },
+            onValueChange = component::onUpdateMobilePhone
+        )
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                component.onSave()
+            }
+        ) {
+            Text(text = "Update")
+        }
+    }
 }

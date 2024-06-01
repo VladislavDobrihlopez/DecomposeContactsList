@@ -42,8 +42,8 @@ class DefaultSaveContactComponent(
         _state.value = state.value.copy(mobilePhone = mobilePhone)
     }
 
-    override fun onSave(model: SaveContactComponent.Model) {
-        val (userName, mobilePhone) = model
+    override fun onSave() {
+        val (userName, mobilePhone) = state.value
         saveContactUseCase(userName, mobilePhone)
         onSaveSuccessfully()
     }

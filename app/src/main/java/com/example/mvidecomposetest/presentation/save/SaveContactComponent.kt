@@ -9,7 +9,7 @@ interface SaveContactComponent {
 
     fun onUpdateUserName(userName: String)
     fun onUpdateMobilePhone(mobilePhone: String)
-    fun onSave(model: Model)
+    fun onSave()
 
     @Parcelize
     data class Model(val userName: String, val mobilePhone: String): Parcelable

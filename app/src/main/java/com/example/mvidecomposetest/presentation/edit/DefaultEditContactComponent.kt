@@ -42,8 +42,8 @@ class DefaultEditContactComponent(
         _state.value = state.value.copy(mobilePhone = mobilePhone)
     }
 
-    override fun onSave(model: EditContactComponent.Model) {
-        val (userName, mobilePhone) = model
+    override fun onSave() {
+        val (userName, mobilePhone) = state.value
         editContactUseCase(contact.copy(userName = userName, mobilePhone = mobilePhone))
         onSaveSuccessfully()
     }

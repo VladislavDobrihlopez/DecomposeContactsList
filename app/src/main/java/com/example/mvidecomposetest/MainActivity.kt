@@ -2,6 +2,7 @@ package com.example.mvidecomposetest
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +29,9 @@ class MainActivity : ComponentActivity() {
                                 screen = Screen.ContactList
                             }
                         )
+                        BackHandler {
+                            screen = Screen.ContactList
+                        }
                     }
 
                     Screen.ContactList -> {
@@ -48,6 +52,9 @@ class MainActivity : ComponentActivity() {
                                 screen = Screen.ContactList
                             }
                         )
+                        BackHandler {
+                            screen = Screen.ContactList
+                        }
                     }
                 }
             }
@@ -58,6 +65,5 @@ class MainActivity : ComponentActivity() {
 sealed class Screen {
     object ContactList : Screen()
     object AddContact : Screen()
-
     data class EditContact(val contact: Contact) : Screen()
 }

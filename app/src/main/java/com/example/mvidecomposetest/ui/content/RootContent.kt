@@ -6,14 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.Children
 import com.arkivanov.decompose.extensions.compose.jetpack.stack.animation.stackAnimation
-import com.example.mvidecomposetest.presentation.DefaultRootComponent
-import com.example.mvidecomposetest.presentation.edit.EditContactComponent
-import com.example.mvidecomposetest.presentation.list.ContactsListComponent
-import com.example.mvidecomposetest.presentation.save.SaveContactComponent
+import com.example.mvidecomposetest.presentation.RootComponent
 import com.example.mvidecomposetest.ui.theme.MviDecomposeTestTheme
 
 @Composable
-fun RootContent(rootComponent: DefaultRootComponent) {
+fun RootContent(rootComponent: RootComponent) {
     MviDecomposeTestTheme {
         Box(modifier = Modifier.fillMaxSize()) {
             Children(
@@ -21,16 +18,14 @@ fun RootContent(rootComponent: DefaultRootComponent) {
                 animation = stackAnimation()
             ) { configData ->
                 when (val instance = configData.instance) {
-                    is EditContactComponent -> {
-                        EditContactScreen(component = instance)
+                    is RootComponent.Child.AddContactScreen -> {
+                        AddContactScreen(component = instance.componentContext)
                     }
-
-                    is SaveContactComponent -> {
-                        AddContactScreen(component = instance)
+                    is RootComponent.Child.ContactsListScreen -> {
+                        ContactsScreen(component = instance.componentContext)
                     }
-
-                    is ContactsListComponent -> {
-                        ContactsScreen(component = instance)
+                    is RootComponent.Child.EditContactScreen -> {
+                        EditContactScreen(component = instance.componentContext)
                     }
                 }
             }

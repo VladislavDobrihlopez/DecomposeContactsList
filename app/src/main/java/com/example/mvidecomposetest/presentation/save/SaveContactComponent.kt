@@ -1,6 +1,8 @@
 package com.example.mvidecomposetest.presentation.save
 
+import android.os.Parcelable
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.parcelize.Parcelize
 
 interface SaveContactComponent {
     val state: StateFlow<Model>
@@ -9,5 +11,6 @@ interface SaveContactComponent {
     fun onUpdateMobilePhone(mobilePhone: String)
     fun onSave(model: Model)
 
-    data class Model(val userName: String, val mobilePhone: String)
+    @Parcelize
+    data class Model(val userName: String, val mobilePhone: String): Parcelable
 }

@@ -1,29 +1,29 @@
 package com.example.mvidecomposetest.presentation.list
 
+import com.arkivanov.decompose.ComponentContext
 import com.example.mvidecomposetest.data.ContactsStorage
 import com.example.mvidecomposetest.domain.Contact
 import com.example.mvidecomposetest.domain.GetContactsUseCase
 import com.example.mvidecomposetest.domain.Repository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.mvidecomposetest.presentation.componentScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class DefaultContactsListComponent(
     storage: Repository = ContactsStorage,
+    private val componentContext: ComponentContext,
+    private val getContactsUseCase: GetContactsUseCase = GetContactsUseCase(storage),
     private val onAddContactRequested: () -> Unit,
     private val onEditingContactRequested: (Contact) -> Unit,
-) : ContactsListComponent {
-    private val getContactsUseCase = GetContactsUseCase(storage)
+) : ContactsListComponent, ComponentContext by componentContext {
     private val initState = ContactsListComponent.Model(listOf())
-    private val scope = CoroutineScope(Dispatchers.Main.immediate)
 
     override val state = getContactsUseCase()
         .map { storedContacts ->
             ContactsListComponent.Model(storedContacts)
         }
-        .stateIn(scope, SharingStarted.WhileSubscribed(500), initState)
+        .stateIn(componentScope, SharingStarted.WhileSubscribed(500), initState)
 
     override fun onAddNewClick() {
         onAddContactRequested()

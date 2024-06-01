@@ -1,5 +1,7 @@
 package com.example.mvidecomposetest.presentation.edit
 
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.statekeeper.consume
 import com.example.mvidecomposetest.data.ContactsStorage
 import com.example.mvidecomposetest.domain.Contact
 import com.example.mvidecomposetest.domain.EditContactUseCase
@@ -9,12 +11,22 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class DefaultEditContactComponent(
-    private val contact: Contact,
     storage: Repository = ContactsStorage,
-) : EditContactComponent {
+    private val componentContext: ComponentContext,
+    private val contact: Contact,
+) : EditContactComponent, ComponentContext by componentContext {
+    companion object {
+        private val SCREEN_KEY = DefaultEditContactComponent::class.java.simpleName
+    }
+
+    init {
+        stateKeeper.register(SCREEN_KEY) {
+            state.value
+        }
+    }
+
     private val editContactUseCase = EditContactUseCase(storage)
-    private val initState =
-        EditContactComponent.Model(userName = contact.userName, mobilePhone = contact.mobilePhone)
+    private val initState = stateKeeper.consume(SCREEN_KEY) ?: EditContactComponent.Model(userName = contact.userName, mobilePhone = contact.mobilePhone)
 
     private val _state = MutableStateFlow(initState)
 

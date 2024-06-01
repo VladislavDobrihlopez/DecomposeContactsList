@@ -1,5 +1,7 @@
 package com.example.mvidecomposetest.presentation.save
 
+import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.statekeeper.consume
 import com.example.mvidecomposetest.byDefault
 import com.example.mvidecomposetest.data.ContactsStorage
 import com.example.mvidecomposetest.domain.AddContactUseCase
@@ -10,9 +12,20 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class DefaultSaveContactComponent(
     storage: Repository = ContactsStorage,
-) : SaveContactComponent {
-    private val saveContactUseCase = AddContactUseCase(storage)
-    private val initState =
+    componentContext: ComponentContext,
+    private val saveContactUseCase: AddContactUseCase = AddContactUseCase(storage)
+) : SaveContactComponent, ComponentContext by componentContext {
+    companion object {
+        private val SCREEN_KEY = DefaultSaveContactComponent::class.java.simpleName
+    }
+
+    init {
+        stateKeeper.register(SCREEN_KEY) {
+            state.value
+        }
+    }
+
+    private val initState = stateKeeper.consume(SCREEN_KEY) ?:
         SaveContactComponent.Model(userName = String.byDefault, mobilePhone = String.byDefault)
 
     private val _state = MutableStateFlow(initState)

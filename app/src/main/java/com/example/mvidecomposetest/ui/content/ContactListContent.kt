@@ -55,8 +55,8 @@ fun Contacts(
                     modifier = Modifier.clickable {
                         onContactClick(it)
                     },
-                    username = it.username,
-                    phone = it.phone
+                    username = it.userName,
+                    phone = it.mobilePhone
                 )
             }
         }

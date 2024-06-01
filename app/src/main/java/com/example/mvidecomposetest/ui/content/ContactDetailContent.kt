@@ -38,7 +38,7 @@ fun AddContact(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         var username by remember {
-            mutableStateOf(contact?.username ?: "")
+            mutableStateOf(contact?.userName ?: "")
         }
         TextField(
             modifier = Modifier.fillMaxWidth(),
@@ -49,7 +49,7 @@ fun AddContact(
             onValueChange = { username = it }
         )
         var phone by remember {
-            mutableStateOf(contact?.phone ?: "")
+            mutableStateOf(contact?.mobilePhone ?: "")
         }
         TextField(
             modifier = Modifier.fillMaxWidth(),
@@ -67,8 +67,8 @@ fun AddContact(
                 } else {
                     viewModel.editContact(
                         contact.copy(
-                            username = username,
-                            phone = phone
+                            userName = username,
+                            mobilePhone = phone
                         )
                     )
                 }

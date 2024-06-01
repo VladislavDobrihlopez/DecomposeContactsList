@@ -9,8 +9,8 @@ class AddContactUseCase(
         phone: String
     ) {
         val contact = Contact(
-            username = username,
-            phone = phone
+            userName = username,
+            mobilePhone = phone
         )
         repository.saveContact(contact)
     }

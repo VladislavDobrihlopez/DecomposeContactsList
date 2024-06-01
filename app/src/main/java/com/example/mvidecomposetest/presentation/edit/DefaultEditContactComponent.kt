@@ -14,6 +14,7 @@ class DefaultEditContactComponent(
     storage: Repository = ContactsStorage,
     private val componentContext: ComponentContext,
     private val contact: Contact,
+    private val onSaveSuccessfully: () -> Unit,
 ) : EditContactComponent, ComponentContext by componentContext {
     companion object {
         private val SCREEN_KEY = DefaultEditContactComponent::class.java.simpleName
@@ -44,5 +45,6 @@ class DefaultEditContactComponent(
     override fun onSave(model: EditContactComponent.Model) {
         val (userName, mobilePhone) = model
         editContactUseCase(contact.copy(userName = userName, mobilePhone = mobilePhone))
+        onSaveSuccessfully()
     }
 }

@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.asStateFlow
 class DefaultSaveContactComponent(
     storage: Repository = ContactsStorage,
     componentContext: ComponentContext,
-    private val saveContactUseCase: AddContactUseCase = AddContactUseCase(storage)
+    private val saveContactUseCase: AddContactUseCase = AddContactUseCase(storage),
+    private val onSaveSuccessfully: () -> Unit,
 ) : SaveContactComponent, ComponentContext by componentContext {
     companion object {
         private val SCREEN_KEY = DefaultSaveContactComponent::class.java.simpleName
@@ -44,5 +45,6 @@ class DefaultSaveContactComponent(
     override fun onSave(model: SaveContactComponent.Model) {
         val (userName, mobilePhone) = model
         saveContactUseCase(userName, mobilePhone)
+        onSaveSuccessfully()
     }
 }

@@ -12,5 +12,5 @@ interface EditContactComponent {
     fun onSave()
 
     @Parcelize
-    data class Model(val userName: String, val mobilePhone: String): Parcelable
+    data class Model(val id: Int, val userName: String, val mobilePhone: String): Parcelable
 }

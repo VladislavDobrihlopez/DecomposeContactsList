@@ -2,7 +2,9 @@ package com.example.mvidecomposetest.presentation.edit
 
 import com.arkivanov.mvikotlin.core.store.Store
 
-interface EditContactStore: Store<EditContactStore.Intent, EditContactComponent.Model, EditContactStore.Label> {
+typealias EditContactStoreState = EditContactComponent.Model
+
+interface EditContactStore: Store<EditContactStore.Intent, EditContactStoreState, EditContactStore.Label> {
 
     sealed interface Intent {
         data class UsernameChanged(val username: String): Intent

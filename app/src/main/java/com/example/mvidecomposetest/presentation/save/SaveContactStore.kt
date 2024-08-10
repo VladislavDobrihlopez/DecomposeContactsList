@@ -2,6 +2,8 @@ package com.example.mvidecomposetest.presentation.save
 
 import com.arkivanov.mvikotlin.core.store.Store
 
+typealias SaveContactStoreState = SaveContactComponent.Model
+
 interface SaveContactStore : Store<SaveContactStore.Intent, SaveContactComponent.Model, SaveContactStore.Label> {
 
     sealed interface Intent {

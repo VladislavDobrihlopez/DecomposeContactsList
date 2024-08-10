@@ -51,7 +51,7 @@ fun ContactsScreen(
                     modifier = Modifier.clickable {
                         component.onContactClick(it)
                     },
-                    username = it.userName,
+                    username = it.username,
                     phone = it.mobilePhone
                 )
             }

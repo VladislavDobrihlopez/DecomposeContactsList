@@ -1,6 +1,7 @@
 package com.example.mvidecomposetest.presentation.save
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.example.mvidecomposetest.presentation.componentScope
@@ -13,10 +14,11 @@ class DefaultSaveContactComponent(
     private val onSaveSuccessfully: () -> Unit,
 ) : SaveContactComponent, ComponentContext by componentContext {
 
-    private lateinit var store: SaveContactStore
+    private val store: SaveContactStore = instanceKeeper.getStore {
+        SaveContactStoreFactory().create()
+    }
 
     init {
-        store = SaveContactStoreFactory().create()
         componentScope.launch {
             store.labels.collect { label ->
                 when (label) {

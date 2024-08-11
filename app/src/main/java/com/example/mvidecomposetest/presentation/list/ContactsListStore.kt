@@ -1,9 +1,11 @@
 package com.example.mvidecomposetest.presentation.list
 
+import com.arkivanov.essenty.instancekeeper.InstanceKeeper
+import com.arkivanov.essenty.instancekeeper.InstanceKeeperOwner
 import com.arkivanov.mvikotlin.core.store.Store
 import com.example.mvidecomposetest.domain.Contact
 
-interface ContactsListStore: Store<ContactsListStore.Intent, ContactsListStore.State, ContactsListStore.Label> {
+interface ContactsListStore: Store<ContactsListStore.Intent, ContactsListStore.State, ContactsListStore.Label>, InstanceKeeper.Instance {
 
     sealed interface Intent {
         data object AddNewClick: Intent

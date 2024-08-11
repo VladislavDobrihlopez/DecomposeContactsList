@@ -1,6 +1,7 @@
 package com.example.mvidecomposetest.presentation.list
 
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.essenty.instancekeeper.getOrCreate
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.example.mvidecomposetest.domain.Contact
@@ -19,10 +20,11 @@ class DefaultContactsListComponent(
 ) : ContactsListComponent, ComponentContext by componentContext {
 
     private val initState = ContactsListComponent.Model(listOf())
-    private lateinit var store: ContactsListStore
+    private val store: ContactsListStore = instanceKeeper.getOrCreate {
+        ContactsListStoreFactory().create()
+    }
 
     init {
-        store = ContactsListStoreFactory().create()
         componentScope.launch {
             store.labels.collect { label ->
                 when (label) {

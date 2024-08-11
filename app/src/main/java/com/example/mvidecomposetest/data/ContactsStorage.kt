@@ -29,7 +29,7 @@ object ContactsStorage: Repository {
 
     override fun saveContact(contact: Contact) {
         val itemId = if (contact.id == Int.byDefault) data.size else contact.id
-        data[itemId] = contact
+        data[itemId] = contact.copy(id = itemId)
         pendingStorageUpdateEvent.tryEmit(Unit)
     }
 

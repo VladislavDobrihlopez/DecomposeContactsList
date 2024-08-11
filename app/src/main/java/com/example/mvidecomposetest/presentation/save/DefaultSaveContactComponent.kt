@@ -1,50 +1,46 @@
 package com.example.mvidecomposetest.presentation.save
 
 import com.arkivanov.decompose.ComponentContext
-import com.arkivanov.essenty.statekeeper.consume
-import com.example.mvidecomposetest.byDefault
-import com.example.mvidecomposetest.data.ContactsStorage
-import com.example.mvidecomposetest.domain.AddContactUseCase
-import com.example.mvidecomposetest.domain.Repository
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.arkivanov.mvikotlin.core.instancekeeper.getStore
+import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import com.example.mvidecomposetest.presentation.componentScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class DefaultSaveContactComponent(
-    storage: Repository = ContactsStorage,
     componentContext: ComponentContext,
-    private val saveContactUseCase: AddContactUseCase = AddContactUseCase(storage),
     private val onSaveSuccessfully: () -> Unit,
 ) : SaveContactComponent, ComponentContext by componentContext {
-    companion object {
-        private val SCREEN_KEY = DefaultSaveContactComponent::class.java.simpleName
+
+    private val store: SaveContactStore = instanceKeeper.getStore {
+        SaveContactStoreFactory().create()
     }
 
     init {
-        stateKeeper.register(SCREEN_KEY) {
-            state.value
+        componentScope.launch {
+            store.labels.collect { label ->
+                when (label) {
+                    SaveContactStore.Label.OnContactSaved -> onSaveSuccessfully()
+                }
+            }
         }
     }
 
-    private val initState = stateKeeper.consume(SCREEN_KEY) ?:
-        SaveContactComponent.Model(userName = String.byDefault, mobilePhone = String.byDefault)
-
-    private val _state = MutableStateFlow(initState)
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val state: StateFlow<SaveContactComponent.Model>
-        get() = _state.asStateFlow()
+        get() = store.stateFlow
 
     override fun onUpdateUserName(userName: String) {
-        _state.value = state.value.copy(userName = userName)
+        store.accept(SaveContactStore.Intent.UsernameInputted(username = userName))
     }
 
     override fun onUpdateMobilePhone(mobilePhone: String) {
-        _state.value = state.value.copy(mobilePhone = mobilePhone)
+        store.accept(SaveContactStore.Intent.PhoneInputted(phone = mobilePhone))
     }
 
     override fun onSave() {
-        val (userName, mobilePhone) = state.value
-        saveContactUseCase(userName, mobilePhone)
-        onSaveSuccessfully()
+        store.accept(SaveContactStore.Intent.Save)
     }
 }

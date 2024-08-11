@@ -19,7 +19,7 @@ class DefaultRootComponent(
 ) : RootComponent, ComponentContext by componentContext {
     private val backStack = StackNavigation<Config>()
 
-    override val state: Value<ChildStack<Config, RootComponent.Child>> = childStack(
+    override val state: Value<ChildStack<*, RootComponent.Child>> = childStack(
         source = backStack,
         initialConfiguration = Config.ContactsListScreenConfig,
         handleBackButton = true,
@@ -64,7 +64,7 @@ class DefaultRootComponent(
     }
 
     @Parcelize
-    sealed interface Config : Parcelable {
+    private sealed interface Config : Parcelable {
         @Parcelize
         object AddContactScreenConfig : Config
 

@@ -7,6 +7,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class Contact(
     val id: Int = Int.byDefault,
-    val userName: String,
+    val username: String,
     val mobilePhone: String
 ): Parcelable

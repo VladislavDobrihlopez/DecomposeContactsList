@@ -22,6 +22,7 @@ class DefaultContactsListComponent(
     private lateinit var store: ContactsListStore
 
     init {
+        store = ContactsListStoreFactory().create()
         componentScope.launch {
             store.labels.collect { label ->
                 when (label) {

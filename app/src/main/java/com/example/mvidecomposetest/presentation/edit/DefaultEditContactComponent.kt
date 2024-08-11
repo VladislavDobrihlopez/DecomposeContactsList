@@ -3,6 +3,7 @@ package com.example.mvidecomposetest.presentation.edit
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import com.example.mvidecomposetest.domain.Contact
 import com.example.mvidecomposetest.presentation.componentScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
@@ -10,12 +11,14 @@ import kotlinx.coroutines.launch
 
 class DefaultEditContactComponent(
     private val componentContext: ComponentContext,
+    private val contact: Contact,
     private val onSaveSuccessfully: () -> Unit,
 ) : EditContactComponent, ComponentContext by componentContext {
 
     private lateinit var store: EditContactStore
 
     init {
+        store = EditContactStoreFactory().create(contact)
         componentScope.launch {
             store.labels.collect { label ->
                 when (label) {

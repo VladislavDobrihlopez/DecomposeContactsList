@@ -5,17 +5,21 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import com.example.mvidecomposetest.data.ContactsStorage
 import com.example.mvidecomposetest.domain.Contact
 import com.example.mvidecomposetest.domain.GetContactsUseCase
+import com.example.mvidecomposetest.domain.Repository
 import kotlinx.coroutines.launch
 
-class ContactsListStoreFactory(
-    private val storeFactory: StoreFactory,
-    private val getContactsUseCase: GetContactsUseCase,
-) {
+class ContactsListStoreFactory {
     companion object {
         private val NAME = ContactsListStore::class.java.simpleName
     }
+
+    private val repository: Repository = ContactsStorage
+    private val storeFactory: StoreFactory = DefaultStoreFactory()
+    private val getContactsUseCase: GetContactsUseCase = GetContactsUseCase(repository)
 
     fun create(): ContactsListStore = object : ContactsListStore,
         Store<ContactsListStore.Intent, ContactsListStore.State, ContactsListStore.Label> by storeFactory.create(
@@ -41,18 +45,21 @@ class ContactsListStoreFactory(
     }
 
     private inner class ExecutorImpl: CoroutineExecutor<ContactsListStore.Intent, Action, ContactsListStore.State, Message, ContactsListStore.Label>() {
-        override fun executeIntent(intent: ContactsListStore.Intent) {
-            super.executeIntent(intent)
-            when (intent) {
-                ContactsListStore.Intent.AddNewClick -> publish(ContactsListStore.Label.OnAddContactRequested)
-                is ContactsListStore.Intent.ContactClick -> publish(ContactsListStore.Label.OnEditingContactRequested(intent.contact))
+        override fun executeAction(action: Action, getState: () -> ContactsListStore.State) {
+            super.executeAction(action, getState)
+            when (action) {
+                is Action.UpdateContacts -> dispatch(Message.Content(action.items))
             }
         }
 
-        override fun executeAction(action: Action) {
-            super.executeAction(action)
-            when (action) {
-                is Action.UpdateContacts -> dispatch(Message.Content(action.items))
+        override fun executeIntent(
+            intent: ContactsListStore.Intent,
+            getState: () -> ContactsListStore.State,
+        ) {
+            super.executeIntent(intent, getState)
+            when (intent) {
+                ContactsListStore.Intent.AddNewClick -> publish(ContactsListStore.Label.OnAddContactRequested)
+                is ContactsListStore.Intent.ContactClick -> publish(ContactsListStore.Label.OnEditingContactRequested(intent.contact))
             }
         }
     }

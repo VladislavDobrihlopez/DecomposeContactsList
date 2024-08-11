@@ -16,6 +16,7 @@ class DefaultSaveContactComponent(
     private lateinit var store: SaveContactStore
 
     init {
+        store = SaveContactStoreFactory().create()
         componentScope.launch {
             store.labels.collect { label ->
                 when (label) {

@@ -4,16 +4,20 @@ import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import com.example.mvidecomposetest.data.ContactsStorage
 import com.example.mvidecomposetest.domain.Contact
 import com.example.mvidecomposetest.domain.EditContactUseCase
+import com.example.mvidecomposetest.domain.Repository
 
-class EditContactStoreFactory(
-    private val storeFactory: StoreFactory,
-    private val editContactUseCase: EditContactUseCase,
-) {
+class EditContactStoreFactory {
     companion object {
         private val NAME = EditContactStoreFactory::class.java.simpleName
     }
+
+    private val repository: Repository = ContactsStorage
+    private val storeFactory: StoreFactory = DefaultStoreFactory()
+    private val editContactUseCase: EditContactUseCase = EditContactUseCase(repository)
 
     fun create(contact: Contact): EditContactStore = object : EditContactStore,
         Store<EditContactStore.Intent, EditContactStoreState, EditContactStore.Label> by storeFactory.create(
@@ -30,10 +34,14 @@ class EditContactStoreFactory(
         ) {}
 
     private inner class ExecutorImpl: CoroutineExecutor<EditContactStore.Intent, Nothing, EditContactStoreState, Message, EditContactStore.Label>() {
-        override fun executeIntent(intent: EditContactStore.Intent) {
+
+        override fun executeIntent(
+            intent: EditContactStore.Intent,
+            getState: () -> EditContactStoreState,
+        ) {
             when (intent) {
                 EditContactStore.Intent.Confirm -> {
-                    val state = state()
+                    val state = getState()
                     editContactUseCase(
                         Contact(
                             id = state.id,

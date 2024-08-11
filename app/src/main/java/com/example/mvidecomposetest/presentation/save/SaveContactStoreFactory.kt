@@ -4,15 +4,20 @@ import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
+import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import com.example.mvidecomposetest.data.ContactsStorage
 import com.example.mvidecomposetest.domain.AddContactUseCase
+import com.example.mvidecomposetest.domain.Repository
 
-class SaveContactStoreFactory(
-    private val storeFactory: StoreFactory,
-    private val addContactUseCase: AddContactUseCase,
-) {
+// In case of using DI dependencies must be injected
+class SaveContactStoreFactory {
     companion object {
         private val NAME = SaveContactStoreFactory::class.java.simpleName
     }
+
+    private val repository: Repository = ContactsStorage
+    private val storeFactory: StoreFactory = DefaultStoreFactory()
+    private val addContactUseCase: AddContactUseCase = AddContactUseCase(repository)
 
     private val store: Store<SaveContactStore.Intent, SaveContactStoreState, SaveContactStore.Label> =
         storeFactory.create(
@@ -25,7 +30,11 @@ class SaveContactStoreFactory(
     fun create(): SaveContactStore = object: SaveContactStore, Store<SaveContactStore.Intent, SaveContactStoreState, SaveContactStore.Label> by store {}
 
     private inner class ExecutorImpl : CoroutineExecutor<SaveContactStore.Intent, Nothing, SaveContactStoreState, Message, SaveContactStore.Label>() {
-        override fun executeIntent(intent: SaveContactStore.Intent) {
+        override fun executeIntent(
+            intent: SaveContactStore.Intent,
+            getState: () -> SaveContactStoreState,
+        ) {
+            super.executeIntent(intent, getState)
             when (intent) {
                 is SaveContactStore.Intent.PhoneInputted -> {
                     dispatch(Message.PhoneInputted(phone = intent.phone))
@@ -36,7 +45,7 @@ class SaveContactStoreFactory(
                 }
 
                 SaveContactStore.Intent.Save -> {
-                    val state = state()
+                    val state = getState()
                     addContactUseCase(username = state.userName, phone = state.mobilePhone)
                     publish(SaveContactStore.Label.OnContactSaved)
                 }

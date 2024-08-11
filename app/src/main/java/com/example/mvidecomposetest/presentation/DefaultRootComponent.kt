@@ -54,6 +54,7 @@ class DefaultRootComponent(
                 RootComponent.Child.EditContactScreen(
                     DefaultEditContactComponent(
                         componentContext = componentContext,
+                        contact = config.contact,
                         onSaveSuccessfully = {
                             backStack.pop()
                         }
